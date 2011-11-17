@@ -1,28 +1,34 @@
 require 'formula'
 
 class GitManuals < Formula
-  url 'http://kernel.org/pub/software/scm/git/git-manpages-1.7.6.tar.bz2'
-  md5 'a017935cf9e90d9f056b6547c318fd15'
+  url 'http://git-core.googlecode.com/files/git-manpages-1.7.7.3.tar.gz'
+  sha1 'cf1b0d35e2d242bc4cffce3b2bf5b3e32857b395'
 end
 
 class GitHtmldocs < Formula
-  url 'http://kernel.org/pub/software/scm/git/git-htmldocs-1.7.6.tar.bz2'
-  md5 '8ab9c524844ad54edcb5c40d1c886ded'
+  url 'http://git-core.googlecode.com/files/git-htmldocs-1.7.7.3.tar.gz'
+  sha1 'bc0f89cb04e562e4a6d3b936382dbc8f593d861f'
 end
 
 class Git < Formula
-  url 'http://kernel.org/pub/software/scm/git/git-1.7.6.tar.bz2'
-  md5 '9e0a438eb71e89eedb61f89470ed32a0'
+  url 'http://git-core.googlecode.com/files/git-1.7.7.3.tar.gz'
+  sha1 '382ee40da74a1b4a1875820c0f0a35c9ccd750f8'
   homepage 'http://git-scm.com'
+
+  def options
+    [['--with-blk-sha1', 'compile with the optimized SHA1 implementation']]
+  end
 
   def install
     # If these things are installed, tell Git build system to not use them
     ENV['NO_FINK']='1'
     ENV['NO_DARWIN_PORTS']='1'
-    # If local::lib is used you get a 'Only one of PREFIX or INSTALL_BASE can be given' error
-    ENV['PERL_MM_OPT']=''
-    # Build verbosely.
-    ENV['V']='1'
+    ENV['V']='1' # build verbosely
+
+    # Clean XCode 4.x installs don't include Perl MakeMaker
+    ENV['NO_PERL_MAKEMAKER']='1' if MacOS.lion?
+
+    ENV['BLK_SHA1']='1' if ARGV.include? '--with-blk-sha1'
 
     inreplace "Makefile" do |s|
       s.remove_make_var! %w{CFLAGS LDFLAGS}
@@ -36,9 +42,8 @@ class Git < Formula
 
     # Install emacs support.
     (share+'doc/git-core/contrib').install 'contrib/emacs'
-
-    # Install contrib files to share/contrib
-    (share).install 'contrib'
+    # Some people like the stuff in the contrib folder
+    (share+'git').install 'contrib'
 
     # These files are exact copies of the git binary, so like the contents
     # of libexec/git-core lets hard link them.
@@ -62,10 +67,10 @@ class Git < Formula
       #{etc}/bash_completion.d
 
     Emacs support has been installed to:
-      #{share}/doc/git-core/contrib/emacs
+      #{HOMEBREW_PREFIX}/share/doc/git-core/contrib/emacs
 
-    The rest of the "contrib" has been installed to:
-      #{share}/contrib
+    The rest of the "contrib" is installed to:
+      #{HOMEBREW_PREFIX}/share/git/contrib
     EOS
   end
 end
