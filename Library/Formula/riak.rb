@@ -1,9 +1,9 @@
 require 'formula'
 
 class Riak < Formula
-  url 'http://downloads.basho.com/riak/CURRENT/riak-1.0.1.tar.gz'
+  url 'http://downloads.basho.com/riak/riak-1.0.3/riak-1.0.3.tar.gz'
   homepage 'http://wiki.basho.com/Riak.html'
-  md5 '7334e56ba6449f3c72d90f9acab0493c'
+  md5 '433d2cb0c6eba0b6d374d9d37f7f54fe'
 
   head 'https://github.com/basho/riak.git'
 
